@@ -118,7 +118,7 @@ export class CheckoutComponent implements OnInit {
     
     // subscribe to cartService.totalQuantity
     this.cartService.totalQuantity.subscribe(
-      totallQuantity => this.totalQuantity = totallQuantity
+      totalQuantity => this.totalQuantity = totalQuantity
     );
 
     // subscribe to cartService.totalPrice
@@ -206,8 +206,8 @@ export class CheckoutComponent implements OnInit {
     purchase.billingAddress = this.checkoutFormGroup.controls['billingAddress'].value;
     const billingState: State = JSON.parse(JSON.stringify(purchase.billingAddress.state));
     const billingCountry: Country = JSON.parse(JSON.stringify(purchase.billingAddress.country));
-    purchase.shippingAddress.state = billingState.name;
-    purchase.shippingAddress.country = billingCountry.name;
+    purchase.billingAddress.state = billingState.name;
+    purchase.billingAddress.country = billingCountry.name;
 
     //populate purchase - order and order ITems
     purchase.order = order;
