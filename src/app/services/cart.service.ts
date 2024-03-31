@@ -7,21 +7,34 @@ import { BehaviorSubject, Subject } from 'rxjs';
 })
 export class CartService {
 
-  cardItems: CartItem[] = [];
+  cartItems: CartItem[] = [];
 
   totalPrice: Subject<number> = new BehaviorSubject<number>(0);
   totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
-  constructor() { }
+  //storage: Storage = sessionStorage;
+  storage: Storage = localStorage;
+
+  constructor() {
+    //read data from storage
+    let data = JSON.parse(this.storage.getItem('cartItems')!);
+
+    if(data != null) {
+      this.cartItems = data;
+
+      //compute totals based on the data that is read from storage
+      this.computeCartTotals();
+    }
+   }
 
   addToCart(theCartItem: CartItem) {
     //check if we already have the item in our cart
     let alreadyExitsCart: boolean = false;
     let existingCartItem: CartItem = undefined;
-    if (this.cardItems.length > 0) {
+    if (this.cartItems.length > 0) {
       //find the item in the cart based on item id
 
-      existingCartItem = this.cardItems.find(cardITem => cardITem.id === theCartItem.id)
+      existingCartItem = this.cartItems.find(cardITem => cardITem.id === theCartItem.id)
       // for (let tempCartItem of this.cardItems) {
       //   if (tempCartItem.id === theCartItem.id) {
       //     existingCartItem = tempCartItem;
@@ -37,7 +50,7 @@ export class CartService {
     }
     else {
       //just add the item to the array
-      this.cardItems.push(theCartItem);
+      this.cartItems.push(theCartItem);
     }
 
     //compute cart total price and total quantity
@@ -49,7 +62,7 @@ export class CartService {
     let totalPriceValue: number = 0;
     let totalQuantityValue: number = 0;
 
-    for(let currentCardItem of this.cardItems) {
+    for(let currentCardItem of this.cartItems) {
       totalPriceValue += currentCardItem.quantity * currentCardItem.unitPrice;
       totalQuantityValue += currentCardItem.quantity;
     }
@@ -59,11 +72,18 @@ export class CartService {
     this.totalQuantity.next(totalQuantityValue);
 
     this.logCartData(totalPriceValue, totalQuantityValue);
+
+    //persist cart data
+    this.persistCartItems();
+  }
+
+  persistCartItems() {
+    this.storage.setItem('cartItems', JSON.stringify(this.cartItems));
   }
 
   logCartData(totalPriceValue: number, totalQuantityValue: number) {
     console.log('Contents of the cart');
-    for(let tempCartItem of this.cardItems) {
+    for(let tempCartItem of this.cartItems) {
       const subTotalPrice = tempCartItem.quantity * tempCartItem.unitPrice;
       console.log(`name: ${tempCartItem.name}, quantity = ${tempCartItem.quantity}, unitPrice = ${tempCartItem.unitPrice}, subTotalPrice = ${subTotalPrice}`)
     }
@@ -84,11 +104,11 @@ export class CartService {
 
   remove(theCardItem: CartItem) {
     //get index of it.
-    const itemIndex = this.cardItems.findIndex(tempCardItem => tempCardItem.id === theCardItem.id);
+    const itemIndex = this.cartItems.findIndex(tempCardItem => tempCardItem.id === theCardItem.id);
     //if found remove the item from the array 
 
     if(itemIndex > -1) {
-      this.cardItems.splice(itemIndex,1);
+      this.cartItems.splice(itemIndex,1);
       this.computeCartTotals();
     }
 
