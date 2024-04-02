@@ -13,16 +13,16 @@
                     </tr>
 
                     <tr *ngFor="let tempOrderHistory of orderHistoryList">
-                        <td>
+                        <td style="padding-left: 10px;">
                              {{tempOrderHistory.orderTrackingNumber}}
                         </td>
-                        <td>
+                        <td style="padding-left: 10px;">
                             {{tempOrderHistory.totalPrice | currency: 'USD'}}
                         </td>
-                        <td>
+                        <td style="padding-left: 50px;">
                             {{tempOrderHistory.totalQuantity}}
                         </td>
-                        <td>
+                        <td style="padding-left: 10px;">
                             {{tempOrderHistory.dateCreated | date: 'medium'}}
                         </td>
                     </tr>
